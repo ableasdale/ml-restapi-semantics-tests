@@ -18,12 +18,13 @@ public class Main {
 
     public static final String TURTLE_FILE = "src/main/resources/humord.ttl";
     private static final int TRIES = 1000;
-    private static final int EXPECTED_RESULT = 175577;
+    private static final int EXPECTED_RESULT = 175578;
 
     private static Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     // URIs and Query Components
-    private static String BASE = "http://localhost:8000";
+    private static String HOST = "localhost";
+    private static String BASE = "http://"+HOST+":8000";
     private static String TX_URL = BASE + "/v1/transactions";
     private static String PUT_BASEURL = "http://localhost:8000/v1/graphs?default";
     private static String BASEURL = "http://localhost:8000/v1/graphs/sparql?query=";
@@ -194,12 +195,13 @@ public class Main {
         try {
             ListenableFuture<Response> whenResponse = asyncHttpClient.executeRequest(req);
             Response response = whenResponse.get();
-            //String sRes = response.getResponseBody();
-            LOG.info("Tx: commit "+response.getStatusCode());
+            if(response.getStatusCode() != 204){
+                LOG.warn("Unexpected response code from commit: "+response.getStatusCode());
+                //LOG.info("Tx: commit "+response.getStatusCode());
+            }
         } catch (ExecutionException | InterruptedException e) {
             LOG.error("Exception caught:", e);
         }
-
     }
 
     private static void logIfFalse(boolean result) {
