@@ -23,12 +23,12 @@ public class Main {
     private static Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     // URIs and Query Components
-    private static String HOST = "localhost";
+    private static String HOST = "HOSTNAME";
     private static String BASE = "http://"+HOST+":8000";
     private static String TX_URL = BASE + "/v1/transactions";
-    private static String PUT_BASEURL = "http://localhost:8000/v1/graphs?default";
-    private static String BASEURL = "http://localhost:8000/v1/graphs/sparql?query=";
-    private static String BASEURL_XQY = "http://localhost:8000/v1/eval";
+    private static String PUT_BASEURL = BASE + "/v1/graphs?default";
+    private static String BASEURL = BASE + "/v1/graphs/sparql?query=";
+    private static String BASEURL_XQY = BASE + "/v1/eval";
     private static String SELECT = "select (count(*) as ?n) where {graph <http://marklogic.com/semantics#default-graph> {?s ?p ?o} }";
     private static String ORDERBY = "  order by ?s ?p ?o";
     private static String SELECT_ORDERBY = SELECT + ORDERBY;
@@ -138,6 +138,7 @@ public class Main {
         return pass;
     }
 
+    /* Not needed now as we overwrite the graph using a transaction
     private static void deleteGraph(AsyncHttpClient asyncHttpClient, Realm realm) {
 
         Request req = asyncHttpClient.prepareDelete(PUT_BASEURL)
@@ -152,7 +153,7 @@ public class Main {
         } catch (ExecutionException | InterruptedException e) {
             LOG.error("Exception caught:", e);
         }
-    }
+    } */
 
     private static void putGraph(AsyncHttpClient asyncHttpClient, Realm realm) {
         Request req = asyncHttpClient.preparePut(PUT_BASEURL)
@@ -163,7 +164,7 @@ public class Main {
         try {
             ListenableFuture<Response> whenResponse = asyncHttpClient.executeRequest(req);
             Response response = whenResponse.get();
-            if(response.getStatusCode() != 204){
+            if(response.getStatusCode() != 204 || response.getStatusCode() != 201){
                 LOG.warn("Unexpected response code from PUT: "+response.getStatusCode());
             }
         } catch (ExecutionException | InterruptedException e) {
