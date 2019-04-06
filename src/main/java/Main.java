@@ -23,7 +23,7 @@ public class Main {
     private static Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     // URIs and Query Components
-    private static String HOST = "HOSTNAME";
+    private static String HOST = "engrlab-129-255.engrlab.marklogic.com";
     private static String BASE = "http://"+HOST+":8000";
     private static String TX_URL = BASE + "/v1/transactions";
     private static String PUT_BASEURL = BASE + "/v1/graphs?default";
@@ -89,8 +89,8 @@ public class Main {
             String sRes = response.getResponseBody();
             // LOG.info(sRes);
             // TODO - I may be missing something here but it seems to be the case that /v1/eval contains an unusual response (multipart) style and can't be changed, so I'm getting a subsequence for now to grab the result from the HTTP response and parse as an Integer.
-            // TODO - fix this so it gets the line containing the JSON sequence and gets the value out properly!
-            pass = Integer.parseInt((String) sRes.subSequence(sRes.indexOf("\"n\":") + 4, sRes.indexOf("\"n\":") + 10)) == EXPECTED_RESULT;
+            // TODO - fix this so it gets the line containing the JSON sequence and gets the value out properly! - what i'm doing right now is shir
+            pass = Integer.parseInt((String) sRes.subSequence(sRes.indexOf("\"n\":") + 4, sRes.indexOf("\"n\":") + 10)) == EXPECTED_RESULT; // humord 10)) == EXPECTED_RESULT;
             //pass = response.getResponseBody().split(System.getProperty("line.separator")).length == EXPECTED_RESULT;
             //LOG.info("lines"+response.getResponseBody().split(System.getProperty("line.separator")).length);
         } catch (ExecutionException | InterruptedException e) {
@@ -124,6 +124,7 @@ public class Main {
                 .execute();
         try {
             Response response = whenResponse.get();
+            //LOG.info(response.getResponseBody());
             Builder parser = new Builder();
             Document doc = parser.build(response.getResponseBody(), null);//"http://www.w3.org/2005/sparql-results#"
             XPathContext xc = XPathContext.makeNamespaceContext(doc.getRootElement());
@@ -164,7 +165,7 @@ public class Main {
         try {
             ListenableFuture<Response> whenResponse = asyncHttpClient.executeRequest(req);
             Response response = whenResponse.get();
-            if(response.getStatusCode() != 204 || response.getStatusCode() != 201){
+            if(response.getStatusCode() != 204 && response.getStatusCode() != 201){
                 LOG.warn("Unexpected response code from PUT: "+response.getStatusCode());
             }
         } catch (ExecutionException | InterruptedException e) {
